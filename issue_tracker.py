@@ -23,7 +23,7 @@ def get_issues(project = ""):
         for i in result:
             print(i)
     else:
-        result = conn.execute("SELECT * FROM issues WHERE project={};".format(project))
+        result = conn.execute("SELECT * FROM issues WHERE project='{}';".format(project))
         for i in result:
             print(i)
 
@@ -34,7 +34,8 @@ with eng.connect() as conn:
         user_input = input('Command: ')
         match user_input:
             case '1':
-                get_issues()
+                get_issue_project = input('Project: ')
+                get_issues(get_issue_project)
             case '2':
                 new_issue_name = input('Name: ')
                 new_issue_date = input('Due: ')
