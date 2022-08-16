@@ -29,24 +29,33 @@ def get_issues(project = ""):
 
 # With the connection open...
 with eng.connect() as conn:
-    print('1 - View Issues | 2 - Create Issue | 3 - Exit')
     while running:
+        print('1 - View Issues | 2 - Manage Issues | 3 - Exit')
         user_input = input('Command: ')
         match user_input:
             case '1':
+                print('\nPlease enter project name or RETURN for all projects.\n')
                 get_issue_project = input('Project: ')
                 get_issues(get_issue_project)
+                print('\n')
+                print('-'*50)
             case '2':
-                new_issue_name = input('Name: ')
-                new_issue_date = input('Due: ')
-                new_issue_project = input('Project: ')
-                new_issue(new_issue_name, new_issue_date, new_issue_project)
+                print('1 - Create Issue | 2 - Update Issues | 3 - Delete Issues | 4 - Previous')
+                sub_user_input = input('Command: ')
+                match sub_user_input:
+                    case '1':
+                        print('\nCreating new issue.\n')
+                        new_issue_name = input('Name: ')
+                        new_issue_date = input('Due: ')
+                        new_issue_project = input('Project: ')
+                        new_issue(new_issue_name, new_issue_date, new_issue_project)
+                        print('\n')
+                        print('-'*50)
+                    case '2':
+                        user_input = 0
             case '3':
                 running = False
                 print('Bye')
-
-    try:
-        new_issue('Test3', '19/08/2022', 'Issue_Tracker')
-    except Exception as ex:
-        print("Error: ", ex)
+            case '0':
+                print('back?')
 
