@@ -16,16 +16,25 @@ def auto_increment():
 def new_issue(name, date, project):
 	conn.execute("INSERT INTO issues (UID, Name, Date, Project, Status) VALUES ('{}','{}','{}', '{}', 'Not Started');".format(auto_increment(), name, date, project))
 
+# Update issue property
+def update_issue(prop, change, issue):
+    conn.execute("UPDATE issues SET {} = '{}' WHERE UID = issue;".format(prop, change, issue))
+
 # Get all issues with a project modifier
-def get_issues(project = ""):
+def get_all_issues(project = ""):
     if project == "":
         result = conn.execute("SELECT * FROM issues;")
         for i in result:
             print(i)
     else:
-        result = conn.execute("SELECT * FROM issues WHERE project='{}';".format(project))
+        result = conn.execute("SELECT * FROM issues WHERE project='{}' AND status!='Complete';".format(project))
         for i in result:
             print(i)
+
+# Get a singular issue
+def get_issue(uid):
+    result = conn.execute("SELECT * FROM issues WHERE uid = '{}';".format(uid))
+    return result.fetchone()
 
 # With the connection open...
 with eng.connect() as conn:
@@ -36,7 +45,7 @@ with eng.connect() as conn:
             case '1':
                 print('\nPlease enter project name or RETURN for all projects.\n')
                 get_issue_project = input('Project: ')
-                get_issues(get_issue_project)
+                get_all_issues(get_issue_project)
                 print('\n')
                 print('-'*50)
             case '2':
@@ -52,6 +61,10 @@ with eng.connect() as conn:
                         print('\n')
                         print('-'*50)
                     case '2':
+                        print('Update Issue')
+                        update_issue_uid = input('UID: ')
+                        print(get_issue(update_issue_uid))
+                    case '4':
                         user_input = 0
             case '3':
                 running = False
