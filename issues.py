@@ -30,37 +30,43 @@ list_parser.add_argument('-p', '--project', action='store', dest='issue_project'
 list_parser.add_argument('-d', '--due', action='store', dest='issue_due', help='Filter by due date.')
 
 
-#group.add_argument('-n', '--new', action='store', dest='issue_name', help='Create a new issue.')
-#group.add_argument('-l', '--list', action='store_true', help='List all issues.')
-#group.add_argument('-u', '--update', action='store', dest='issue_UID', help='Update issue, requires issue ID')
-
-
 args = parser.parse_args()
 config = vars(args)
 
 arg_in = sys.argv[1]
 
-match arg_in:
-    case 'new':
-        print('Create a new issue.')
-    case 'list':
-        print('List all issues.')
-    case 'update':
-        'Update an issue.'
+# Check for which argument was given
+def get_arg_input(input):
+    match input:
+        case 'new':
+            print('Create a new issue.')
+        case 'list':
+            if config['issue_project'] != None and config['issue_due'] != None:
+                print('List all issues in project {}, that are due {}'.format(config['issue_project'], check_date_format(config['issue_due'])))
+            elif config['issue_project'] != None:
+                print('List all issues in project {}.'.format(config['issue_project']))
+            elif config['issue_due'] != None:
+                print('list all issues due {}.'.format(check_date_format(config['issue_due'])))
+            else:
+                print('List all issues.')
+        case 'update':
+            'Update an issue.'
 
 # Function - Line breaks for testing
 def line_break():
     print('-'*20)
+
+def check_date_format(date_string):
+    if '/' in date_string:
+        return('on ' + date_string)
+    else:
+        return date_string
     
 
-# TEST PRINTS
+if __name__ == '__main__':
+    get_arg_input(arg_in)
 
-print(vars(args))
-
-line_break()
-
-for i in config:
-    print(i)
-
-print(sys.argv[1])
+    # Test Prints
+    for i in config:
+        print(i)
 
