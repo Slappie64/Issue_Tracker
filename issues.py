@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 # Imports
 import sys
 import argparse
@@ -24,6 +26,7 @@ new_parser.add_argument('-p', '--project', action='store', dest='issue_project',
 # UPDATE - Sub Arguments for the UPDATE command.
 update_parser = subparsers.add_parser('update', help='Update an exisiting issue.')
 update_parser.add_argument('uid', help='UID of issue to update.')
+update_parser.add_argument('-n', '--name', action='store', dest='issue_name', help='Update Issue Name')
 
 # LIST - Sub Arguments for the LIST command.
 list_parser = subparsers.add_parser('list', help='List issues.')
@@ -140,7 +143,8 @@ if __name__ == '__main__':
     with eng.connect() as conn:
         get_arg_input(arg_in)
 
-    # Test Prints
-    #for i in config:
-    #    print(i, config[i])
+
+    #Test Prints
+    for i in config:
+        print(i, config[i])
 
