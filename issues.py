@@ -1,6 +1,7 @@
 # Imports
 import sys
 import argparse
+from sqlalchemy import create_engine
 
 app_description = """
     This is a test and a placeholder.
@@ -35,7 +36,23 @@ config = vars(args)
 
 arg_in = sys.argv[1]
 
-# Check for which argument was given
+# Database connection
+eng = create_engine('postgresql://Slappie64:v2_3tQZz_nUMRUk8r9BVqtfbZdcxtUGE@db.bit.io/Slappie64/issue_tracker', isolation_level='AUTOCOMMIT')
+
+
+
+# Function - Add Issue to database
+def new_issue():
+    return 'new issue'
+
+# Function - List Issues
+def list_issues():
+    return 'list issues'
+
+def update_issue():
+    return 'update issue'
+
+# Function - Check for which argument was given
 def get_arg_input(input):
     match input:
         case 'new':
@@ -56,6 +73,7 @@ def get_arg_input(input):
 def line_break():
     print('-'*20)
 
+# Function - Check date formatting
 def check_date_format(date_string):
     if '/' in date_string:
         return('on ' + date_string)
