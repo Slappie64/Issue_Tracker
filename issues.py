@@ -43,6 +43,31 @@ arg_in = sys.argv[1]
 # Database connection
 eng = create_engine('postgresql://Slappie64:v2_3tQZz_nUMRUk8r9BVqtfbZdcxtUGE@db.bit.io/Slappie64/issue_tracker', isolation_level='AUTOCOMMIT')
 
+class bcolours:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+# Function - Format readble output
+def format_output(issue_in):
+    issue_out = ''
+    for i in issue_in:
+        issue_out += str(i)
+        issue_out += " | "
+        if 'Overdue' in issue_out:
+            issue_out = bcolours.FAIL + issue_out
+        elif 'In Progress' in issue_out:
+            issue_out = bcolours.OKGREEN + issue_out
+        elif 'Not Started' in issue_out:
+            issue_out = bcolours.WARNING + issue_out
+    return issue_out
+
 # Function - Search for UID
 def find_issue(name):
     result = conn.execute("SELECT * FROM issues WHERE name='{}';".format(name))
@@ -62,14 +87,27 @@ def list_issues(all_issues = False, due='', project=''):
     if all_issues == True:
         result = conn.execute("SELECT * FROM issues")
     else:
-        if due != '' and project != '':
+        if due != None and project != None:
             result = conn.execute("SELECT * FROM issues WHERE date='{}' AND project='{}';".format(due, project))
         else:
             result = conn.execute("SELECT * FROM issues WHERE date='{}' OR project='{}';".format(due, project))
     for i in result:
-        print(i)
+        print(format_output(i))
 
+# Function - Update an existing issue
 def update_issue(uid):
+    update_issue_dict = {'name': '', 'date':'', 'project':'', 'status':'', 'details':''}
+    update_issue_dict['name'] = input('Name: ')
+    update_issue_dict['date'] = input('Due Date: ')
+    update_issue_dict['project'] = input('Project: ')
+    update_issue_dict['status'] = input('Status: ')
+    update_issue_dict['details'] = input('Details: ')
+
+    for key, value in update_issue_dict.items():
+        if value == '':
+            continue
+        else:
+            conn.execute("UPDATE issues SET {} = '{}' WHERE uid = {};".format(key, value, uid))
     return uid
 
 # Function - Check for which argument was given
@@ -103,6 +141,6 @@ if __name__ == '__main__':
         get_arg_input(arg_in)
 
     # Test Prints
-    for i in config:
-        print(i, config[i])
+    #for i in config:
+    #    print(i, config[i])
 
