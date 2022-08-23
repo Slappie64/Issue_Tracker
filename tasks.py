@@ -74,6 +74,7 @@ def auto_increment():
 
 # Function - Report and format tasks
 def task_report(task):
+    print('-'*50)
     print(bcolours.BOLD + 'UID: ' + str(task.uid) + bcolours.STOP)
     print(bcolours.OKCYAN + 'Name: ' + str(task.name) + bcolours.STOP)
     print('Due: ', task.date)
@@ -85,8 +86,11 @@ def task_report(task):
     else:
         print(bcolours.FAIL + 'Status: ' + str(task.status) + bcolours.STOP)
     print('Project: ', task.project)
-    print('Created: ', task.created)
-    print('-'*10)
+    #print('Created: ', task.created)
+    print('-'*50)
+
+def get_task(search_param):
+    return search_param
 
 # Function - Get arg input and match it to a case.
 def get_arg(input):
@@ -94,12 +98,22 @@ def get_arg(input):
         case '-n':
             print('Create a new task called', arg_value)
         case '-l':
-            if arg_value == 'all':
-                task_list = conn.execute("SELECT * FROM issues;")
-                for i in task_list:
-                    task_report(ftask(i))
+            match arg_value:
+                case 'all':
+                    task_list = conn.execute("SELECT * FROM issues;")
+                    for i in task_list:
+                        task_report(ftask(i))
+                case 'project':
+                    print('What project dickhead?')
+                case default:
+                    print('u wot')
         case '-t':
-            task_report(task01)
+            try:
+                result = conn.execute("SELECT * FROM issues WHERE uid={}".format(arg_value))
+                task_report(result.fetchone())
+            except Exception as ex:
+                print('There was an error: ', ex)
+                print('-'*50)
 
 # TEST TASKS
 task01 = Task(25, 'test2', specific_time_hours(36))
@@ -107,27 +121,9 @@ task01.status = 'Complete'
 task01.project = 'Test Project'
 task01.details = 'Here are some details for the task'
 
-#format_task_info(task02)
-#format_task_info(task03)
 
 if __name__ == '__main__':
     
     with eng.connect() as conn:
         get_arg(arg)
-    """
-        print(ftask(task01).uid)
-        print(ftask(task01).name)
-        print(ftask(task01).date)
-        print(ftask(task01).project)
-        
-        task_list = conn.execute("SELECT * FROM issues;")
-        for i in task_list:
-            print('UID: ', ftask(i).uid)
-            print('Name: ', ftask(i).name)
-            print('Due: ', ftask(i).due)
-            print('Details: ', ftask(i).details)
-            print('Status: ', ftask(i).status)
-            print('Project: ', ftask(i).project)
-            print('Created: ', ftask(i).created)
-            print('-'*10)
-    """
+
