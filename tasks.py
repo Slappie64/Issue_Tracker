@@ -13,6 +13,7 @@ arg_value = sys.argv[2].lower()
 
 parser.add_argument('-n', help='Create a new task.')
 parser.add_argument('-l', help='List all tasks.')
+parser.add_argument('-t', help='Testing purposes')
 args = parser.parse_args()
 
 # Database connection
@@ -41,6 +42,7 @@ class bcolours:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+    STOP = '\033[0;0m'
 
 # Time Deltas
 today = datetime.now()
@@ -70,12 +72,18 @@ def auto_increment():
     result = conn.execute("SELECT MAX(UID) FROM issues;")
     return result.fetchone()[0] + 1
 
+# Function - Report and format tasks
 def task_report(task):
-    print('UID: ', task.uid)
-    print('Name: ', task.name)
+    print(bcolours.BOLD + 'UID: ' + str(task.uid) + bcolours.STOP)
+    print(bcolours.OKCYAN + 'Name: ' + str(task.name) + bcolours.STOP)
     print('Due: ', task.date)
     print('Details: ', task.details)
-    print('Status: ', task.status)
+    if task.status == 'Complete':
+        print(bcolours.OKGREEN + 'Status: ', str(task.status) + bcolours.STOP)
+    elif task.status == 'In Progress':
+        print(bcolours.WARNING + 'Status: ' + str(task.status) + bcolours.STOP)
+    else:
+        print(bcolours.FAIL + 'Status: ' + str(task.status) + bcolours.STOP)
     print('Project: ', task.project)
     print('Created: ', task.created)
     print('-'*10)
@@ -90,13 +98,14 @@ def get_arg(input):
                 task_list = conn.execute("SELECT * FROM issues;")
                 for i in task_list:
                     task_report(ftask(i))
+        case '-t':
+            task_report(task01)
 
 # TEST TASKS
-
-task01 = {'uid':'20', 'name':'15:02 Test', 'date':'Today', 'project':'Test Project'}
-task02 = Task(2, 'test2', specific_time_hours(36))
-task03 = Task(3, 'test3', next_week)
-
+task01 = Task(25, 'test2', specific_time_hours(36))
+task01.status = 'Complete'
+task01.project = 'Test Project'
+task01.details = 'Here are some details for the task'
 
 #format_task_info(task02)
 #format_task_info(task03)
