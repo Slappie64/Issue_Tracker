@@ -63,4 +63,5 @@ if __name__ == '__main__':
     with eng.connect() as conn:
         task_list = conn.execute("SELECT * FROM issues;")
         for i in task_list:
-            print(i)
+            for key in i.keys():
+                print(key, i[key])
