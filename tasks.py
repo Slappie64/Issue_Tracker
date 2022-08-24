@@ -12,7 +12,7 @@ arg = sys.argv[1]
 arg_value = sys.argv[2].lower()
 
 parser.add_argument('-n', help='Create a new task.')
-parser.add_argument('-l', help='List all tasks.')
+parser.add_argument('-p', help='List all tasks by project.')
 parser.add_argument('-t', help='Testing purposes')
 args = parser.parse_args()
 
@@ -61,9 +61,9 @@ def specific_time_weeks(amount):
 def ftask(in_task):
 
     format_task = Task(in_task['uid'], in_task['name'], in_task['date'])
-    format_task.details = in_task['project']
-    #format_task.details = in_task['details']
-    #format_task.status = in_task['status']
+    format_task.project = in_task['project']
+    format_task.details = in_task['details']
+    format_task.status = in_task['status']
     return format_task
 
 # Function - Get the highest number from the UID column and return MAX + 1
@@ -89,24 +89,36 @@ def task_report(task):
     #print('Created: ', task.created)
     print('-'*50)
 
-def get_task(search_param):
-    return search_param
+def get_task(search_col, search_param):
+    task_list = conn.execute("SELECT * FROM issues WHERE {}='{}';".format(search_col, search_param))
+    return task_list
 
+def new_task(task_name):
+    task_name = task_name.lower()
+    task_due = input("Due date: ").lower()
+    task_project = input("Enter project code or leave blank: ").lower()
+    task_details = input("Project details: ")
+
+    try:
+        conn.execute("INSERT INTO issues (UID, Name, Date, Project, Status) VALUES ('{}', '{}', '{}', '{}', 'Not Started');".format(auto_increment(),task_name, task_due, task_project))
+        print('SUCCESS')
+    except Exception as ex:
+        print('There was an error: ', ex)
 # Function - Get arg input and match it to a case.
 def get_arg(input):
     match input:
         case '-n':
             print('Create a new task called', arg_value)
-        case '-l':
+            new_task(arg_value)
+        case '-p':
             match arg_value:
                 case 'all':
                     task_list = conn.execute("SELECT * FROM issues;")
                     for i in task_list:
                         task_report(ftask(i))
-                case 'project':
-                    print('What project dickhead?')
                 case default:
-                    print('u wot')
+                    for i in get_task('project', arg_value):
+                        task_report(ftask(i))
         case '-t':
             try:
                 result = conn.execute("SELECT * FROM issues WHERE uid={}".format(arg_value))
