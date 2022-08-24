@@ -13,7 +13,7 @@ arg_value = sys.argv[2].lower()
 
 parser.add_argument('-n', help='Create a new task.')
 parser.add_argument('-p', help='List all tasks by project.')
-parser.add_argument('-t', help='Testing purposes')
+parser.add_argument('-t', help='Get task by UID')
 args = parser.parse_args()
 
 # Database connection
@@ -120,12 +120,12 @@ def get_arg(input):
                     for i in get_task('project', arg_value):
                         task_report(ftask(i))
         case '-t':
-            try:
-                result = conn.execute("SELECT * FROM issues WHERE uid={}".format(arg_value))
+            if arg_value.isnumeric():
+                result = conn.execute("SELECT * FROM issues WHERE uid={};".format(arg_value))
                 task_report(result.fetchone())
-            except Exception as ex:
-                print('There was an error: ', ex)
-                print('-'*50)
+            else:
+                result = conn.execute("SELECT * FROM issues WHERE name='{}';".format(arg_value))
+                task_report(result.fetchone())
 
 # TEST TASKS
 task01 = Task(25, 'test2', specific_time_hours(36))
